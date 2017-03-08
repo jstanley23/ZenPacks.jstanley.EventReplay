@@ -3,8 +3,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
-    <configure zcml:condition="have eventPlugins">
-        <preEventPlugin plugin=".eventProcessing.ExamplePreEventPlugin">
-    </configure>
+    <preEventPlugin plugin=".events.EventReplayPreEventPlugin">
+    </preEventPlugin>
 
 </configure>
