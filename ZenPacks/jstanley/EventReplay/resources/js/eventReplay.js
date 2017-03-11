@@ -6,11 +6,17 @@ var gridId = "events_grid";
 function getSelectedEventReplayIds() {
     var grid = Ext.getCmp(gridId),
         selected = grid.selModel.getSelection();
-    return Ext.pluck(Ext.Array.map(selected, function(value, ind, array) { return value.getData() }), 'eventReplayId');
+    return Ext.pluck(Ext.Array.map(selected, function(value, ind, array) { return value.getData() }), 'evid');
 }
 function getSelectedEvents() {
     var grid = Ext.getCmp(gridId);
     return grid.getSelectionModel().getSelection();
+}
+
+function replayEvents() {
+    Zenoss.remote.EventReplayRouter.replay({
+        events: getSelectedEvents();
+    });
 }
 
 var addEventReplayButton = function(event_grid) {
@@ -23,9 +29,7 @@ var addEventReplayButton = function(event_grid) {
             items: [{
                 text: 'Replay event',
                 tooltip: 'Send raw event back through the system',
-                handler: function() {
-                    Zenoss.remote.EventReplayRouter.replay({ events: getSelectedEvents() });
-                },
+                handler: replayEvents(),
             }]
         }
     });
