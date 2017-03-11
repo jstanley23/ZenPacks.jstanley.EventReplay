@@ -1,9 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:zcml="http://namespaces.zope.org/zcml">
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    >
+
+    <include package="Products.ZenUtils.extdirect.zope" file="meta.zcml"/>
 
     <preEventPlugin plugin=".events.EventReplayPreEventPlugin">
     </preEventPlugin>
+
+    <browser:directRouter
+        name="eventreplay_router"
+        for="*"
+        class=".replayApi.EventReplayRouter"
+        namespace="Zenoss.remote"
+        permission="zenoss.View"
+        />
+
+    <adapter
+        name="eventreplay"
+        provides=".replayApi.IEventReplayFacade"
+        for="*"
+        factory=".replayApi.EventReplayFacade"
+        />
+
+
+    <browser:resourceDirectory
+        name="eventreplay"
+        directory="resources"
+        />
+
+    <browser:viewlet
+        name="js-eventreplay"
+        paths="/++resource++eventreplay/js/eventReplay.js"
+        weight="10"
+        for="*"
+        manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
+        class="Products.ZenUI3.browser.javascript.JavaScriptSrcBundleViewlet"
+        permission="zope2.Public"
+        />
 
 </configure>
