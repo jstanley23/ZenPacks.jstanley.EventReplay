@@ -3,9 +3,9 @@
 # or saved.  Do not modify them directly here.
 # NB: PACKAGES is deprecated
 NAME = "ZenPacks.jstanley.EventReplay"
-VERSION = "1.0.0dev"
-AUTHOR = "Your Name Here"
-LICENSE = ""
+VERSION = "0.0.1dev"
+AUTHOR = "Jason Stanley"
+LICENSE = "GPLv2+"
 NAMESPACE_PACKAGES = ['ZenPacks', 'ZenPacks.jstanley']
 PACKAGES = ['ZenPacks', 'ZenPacks.jstanley', 'ZenPacks.jstanley.EventReplay']
 INSTALL_REQUIRES = []
