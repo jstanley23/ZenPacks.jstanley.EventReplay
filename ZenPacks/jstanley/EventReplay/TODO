@@ -1,0 +1,6 @@
+Add manage_addProperty to zenpack install for Settings
+    Save Events (bool)
+    How many events to save (int)
+
+
+If event has hashId, skip saving it
