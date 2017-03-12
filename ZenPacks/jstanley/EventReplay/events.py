@@ -28,6 +28,8 @@ class EventReplayPreEventPlugin(object):
             hashId = r.lpop('eventKeyList')
             r.delete(hashId)
 
-        eventProxy.eventReplayId = uuid
+        eventProxy._zepRawEvent.eventReplayId = uuid
+#        eventProxy.eventReplayId = uuid
+#        eventProxy.myField = 'Test'
 
 
