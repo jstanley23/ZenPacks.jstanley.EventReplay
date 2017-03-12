@@ -1,0 +1,9 @@
+{
+    "EventDetailItem": [
+        {
+            "key": "eventReplayId",
+            "type": 1,
+            "name": "Event Replay Id"
+        }
+    ]
+}

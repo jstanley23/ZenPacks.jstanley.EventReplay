@@ -41,4 +41,12 @@
         permission="zope2.Public"
         />
 
+    <browser:page
+        template="resources/manageEventReplayConfig.pt"
+        name="manageEventReplayConfig"
+        for="Products.ZenModel.DataRoot.DataRoot"
+        permission="zenoss.ManageDMD"
+        />
+
+
 </configure>

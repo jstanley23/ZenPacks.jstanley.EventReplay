@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+
+    <tooltip>
+        <target>eventReplayRedisServer</target>
+        <anchor>top</anchor>
+        <html>Event Replay saves events to a redis server. The server
+            does not need to be local, as long as communication is open.</html>
+    </tooltip>
+
+    <tooltip>
+        <target>eventReplayRedisPort</target>
+        <anchor>top</anchor>
+        <html>Port used to connect to the redis server for event storage.
+            Zenoss zredis uses port 16379 by default.</html>
+    </tooltip>
+
+    <tooltip>
+        <target>eventReplayRedisDB</target>
+        <anchor>top</anchor>
+        <html>Redis database number to use for storing events. Zenoss uses
+            db 0 by default. We use db 15 (The last DB available) to not run
+            into conflicts.</html>
+    </tooltip>
+
+    <tooltip>
+        <target>eventReplayLimit</target>
+        <anchor>top</anchor>
+        <html>Limit the number of events to save to redis. To save on memory.
+            Once the limit is hit, older events will be purged as new come in.
+            What's the Redis memory footprint?
+            To give you a few examples (all obtained using 64-bit instances):
+            An empty instance uses ~ 1MB of memory.
+            1 Million small Keys -> String Value pairs use ~ 100MB of memory.
+            1 Million Keys -> Hash value, representing an object with 5 fields, use ~ 200 MB of memory.</html>
+    </tooltip>
+
+    <tooltip>
+        <target>eventReplayRedisState</target>
+        <anchor>top</anchor>
+        <html>Turn event saving function on or off. This will not effect
+            replaying events already stored. You can turn this option on
+            allow the events you are testing against to be gathered, then
+            turn it off to prevent them from being over written.</html>
+    </tooltip>
+
+    <tooltip>
+        <target>eventReplayRedisFilter</target>
+        <anchor>top</anchor>
+        <html>COMING SOON. I want to create a filter option that allows a user
+            to only store certain events.</html>
+    </tooltip>
+
+</view>
+

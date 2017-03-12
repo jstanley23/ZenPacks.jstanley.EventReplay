@@ -1,10 +1,42 @@
-_REDIS_SERVER = 'localhost'
-_REDIS_PORT = 16379
-# Zenoss seems to only use db 0
-# But just in case, let us use the last db available.
-_REDIS_DB = 15
+from Products.Zuul.utils import ZuulMessageFactory as _t
 
-# Limit of events to store in redis and set if its on or off
-# TODO: Change these into a Setting in webUI
-_LIMIT = 2000
-_STATE = True
+configSchema = [
+    {
+        'id': 'eventReplayRedisServer',
+        'name': _t("Redis server to save events to and read from"),
+        'xtype': 'textfield',
+        '_default': 'localhost',
+        '_type': 'string',
+    },{
+        'id': 'eventReplayRedisPort',
+        'name': _t("Redis server port. Default zredis port: 16379"),
+        'xtype': 'numberfield',
+        '_default': 16379,
+        '_type': 'int',
+    },{
+        'id': 'eventReplayRedisDB',
+        'name': _t("Redis database to save events to and read from"),
+        'xtype': 'numberfield',
+        '_default': 15,
+        '_type': 'int',
+    },{
+        'id': 'eventReplayLimit',
+        'name': _t("Max raw events to save to redis"),
+        'xtype': 'numberfield',
+        '_default': 4001,
+        '_type': 'int',
+    },{
+        'id': 'eventReplayFilter',
+        'name': _t("Filter what events get saved. COMING SOON"),
+        'xtype': 'textfield',
+        '_default': '',
+        '_type': 'string',
+    },{
+        'id': 'eventReplayState',
+        'name': _t("Turn on saving events to redis"),
+        'xtype': 'checkbox',
+        '_default': False,
+        '_type': 'bool',
+    },
+]
+

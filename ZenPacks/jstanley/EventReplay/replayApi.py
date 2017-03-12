@@ -9,12 +9,13 @@ from ast import literal_eval
 from zope.interface import implements
 
 from Products import Zuul
+from Products.ZenMessaging.audit import audit
 from Products.ZenUI3.browser.streaming import StreamingView
 from Products.ZenUtils.Ext import DirectRouter, DirectResponse
 from Products.Zuul.facades import ZuulFacade
 from Products.Zuul.interfaces import IFacade
 
-from .config import _REDIS_SERVER, _REDIS_PORT, _REDIS_DB, _LIMIT, _STATE
+from .config import configSchema
 
 
 LOG = logging.getLogger('zen.eventReplay.api')
@@ -29,8 +30,26 @@ class EventReplayFacade(ZuulFacade):
     implements(IEventReplayFacade)
     def __init__(self, context):
         self.context = context
-        self.redisConfig = (_REDIS_SERVER, _REDIS_PORT, _REDIS_DB)
+        self.redisConfig = (
+            context.getProperty('eventReplayRedisServer'),
+            context.getProperty('eventReplayRedisPort'),
+            context.getProperty('eventReplayRedisDB'),
+        )
         self.redisConnection = self.setupRedisConnection()
+        self.configSchema = configSchema
+
+    def getConfig(self):
+        config = []
+        for prop in self.configSchema:
+            value = self.context.getProperty(prop['id'])
+            value = value if value else ""
+            prop['value'] = value
+            config.append(prop)
+        return config
+
+    def setConfig(self, values):
+        for key, value in values.iteritems():
+            self.context.manage_changeProperties(**{key: value})
 
     def setupRedisConnection(self):
         redisConnection = redis.StrictRedis(*self.redisConfig)
@@ -88,10 +107,22 @@ class EventReplayFacade(ZuulFacade):
 
 
 class EventReplayRouter(DirectRouter):
+    def __init__(self, context, request):
+        super(EventReplayRouter, self).__init__(context, request)
+        self.facade = self._getFacade()
+
     def _getFacade(self):
         return Zuul.getFacade('eventreplay', self.context)
 
     def replayEvents(self, events):
-        facade = self._getFacade()
-        facade.replayEvents(events)
+        self.facade.replayEvents(events)
         return DirectResponse.succeed(msg="Check log for details")
+
+    def getConfig(self):
+        config = self.facade.getConfig()
+        return DirectResponse.succeed(data=config)
+
+    def setConfigValues(self, values):
+        self.facade.setConfig(values)
+        audit('UI.Event.UpdateConfiguration', values=values)
+        return DirectResponse.succeed()
