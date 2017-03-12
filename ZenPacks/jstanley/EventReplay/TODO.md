@@ -3,3 +3,4 @@
 * Compare raw vs current event
     * per event
     * Mass compare option
+* Add in tooltips to Settings page
