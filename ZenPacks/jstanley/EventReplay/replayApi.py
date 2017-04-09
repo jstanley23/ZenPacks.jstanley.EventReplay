@@ -51,6 +51,12 @@ class EventReplayFacade(ZuulFacade):
         for key, value in values.iteritems():
             self.context.manage_changeProperties(**{key: value})
 
+    def getTriggers(self):
+        triggerFacade = Zuul.getFacade('triggers', self.context)
+        triggers = triggerFacade.getTriggers()
+        data = [{'name': t['name'], 'code': t['rule']['source']} for t in triggers]
+        return data
+
     def setupRedisConnection(self):
         redisConnection = redis.StrictRedis(*self.redisConfig)
         return redisConnection
@@ -88,7 +94,7 @@ class EventReplayFacade(ZuulFacade):
 
     def getRawEvent(self, id):
         data = self.redisConnection.hgetall(id)
-        event = data.get('event', {})
+        event = data.get('event', "{}")
         return event
 
     def buildEvent(self, rawEvent):
@@ -113,6 +119,10 @@ class EventReplayRouter(DirectRouter):
 
     def _getFacade(self):
         return Zuul.getFacade('eventreplay', self.context)
+
+    def getTriggers(self):
+        data = self.facade.getTriggers()
+        return DirectResponse.succeed(data=data)
 
     def replayEvents(self, events):
         self.facade.replayEvents(events)

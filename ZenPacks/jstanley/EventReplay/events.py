@@ -1,6 +1,7 @@
 import redis
 
 from zenoss.protocols.jsonformat import to_dict
+from .utils import checkEvent
 
 
 class EventReplayPreEventPlugin(object):
@@ -12,6 +13,12 @@ class EventReplayPreEventPlugin(object):
             return
 
         rawEvent = to_dict(eventProxy._zepRawEvent)
+#        if dmd.getProperty('eventReplayFilter'):
+#            result = checkEvent(rawEvent, dmd.getProperty('eventReplayFilter'))
+#            import pdb; pdb.set_trace()
+#            if not result:
+#                return
+
         r = redis.StrictRedis(
             dmd.getProperty('eventReplayRedisServer'),
             dmd.getProperty('eventReplayRedisPort'),
