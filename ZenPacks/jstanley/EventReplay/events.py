@@ -6,6 +6,7 @@ from .utils import checkEvent
 
 class EventReplayPreEventPlugin(object):
     def apply(self, eventProxy, dmd):
+#        import pdb; pdb.set_trace()
         if not dmd.getProperty('eventReplayState'):
             return
 
