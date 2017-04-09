@@ -28,7 +28,13 @@ configSchema = [
     },{
         'id': 'eventReplayFilter',
         'name': _t("Filter what events get saved. COMING SOON"),
+#        'xtype': 'eventreplayfilter',
         'xtype': 'textfield',
+        '_default': 'ALL',
+        '_type': 'string',
+    },{
+        'id': 'eventReplayFilterCode',
+        'xtype': 'hidden',
         '_default': '',
         '_type': 'string',
     },{

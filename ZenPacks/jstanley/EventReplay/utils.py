@@ -1,32 +1,89 @@
-import os
+from zenoss.protocols.protobufs.model_pb2 import _MODELELEMENTTYPE
 
 
-def first_of(*choices):
-    '''
-    Return the first choice that isn't None.
-    '''
-    for x in choices:
-        if x is not None:
-            return x
+class imitationDevice(object):
+    def __init__(self, event):
+        details = {}
+        eventInfo = event.get('event', {})
+        if eventInfo:
+            eventDetails = eventInfo.get('details', [])
+            details = { x['name']:x['value'] for x in eventDetails }
+        self.ip_address = details.get('zenoss.device.ip_address', [''])[0]
+        self.device_class = details.get('', [''])
+        self.production_state = int(details.get('zenoss.device.production_state', [-10])[0])
+        self.priority = int(details.get('zenoss.device.priority', [-10])[0])
+        self.location = details.get('zenoss.device.location', [''])[0]
+        self.systems = details.get('zenoss.device.systems', [''])
+        self.groups = details.get('zenoss.device.groups', [''])
 
 
-def value_from_conf(conf, name):
-    '''
-    Return value of named property from given standard configuration.
-    '''
-    zenhome = os.environ.get('ZENHOME', '/opt/zenoss')
-    conf_filename = os.path.join(zenhome, 'etc', '%s.conf' % conf)
-    try:
-        conf_file = open(conf_filename, 'r')
-        for line in conf_file:
-            line = line.strip()
-            if line.startswith(name):
-                return line.split()[1]
+class imitationEvent(object):
+    def __init__(self, event):
+        eventDetails = {}
+        eventInfo = event.get('event', {})
+        self.severity = int(eventInfo.get('severity', -10))
+        self.event_key = eventInfo.get('event_key', '')
+        self.event_class = eventInfo.get('event_class', '')
+        self.event_class_key = eventInfo.get('event_class_key', '')
+        self.summary = eventInfo.get('summary', '')
+        self.message = eventInfo.get('message', '')
+        self.fingerprint = eventInfo.get('fingerprint', '')
+        self.agent = eventInfo.get('agent', '')
+        self.monitor = eventInfo.get('monitor', '')
+        self.count = int(event.get('count', 1))
+        self.status = int(event.get('status', -10))
+        self.syslog_priority = int(eventInfo.get('syslog_priority', -10))
+        self.syslog_facility = int(eventInfo.get('syslog_facility', -10))
+        self.nt_event_code = int(eventInfo.get('nt_event_code', -10))
+        self.current_user_name = event.get('current_user_name', '')
 
-        conf_file.close()
 
-    except Exception:
-        pass
+class imitationElement(object):
+    def __init__(self, event):
+        actor = {}
+        eventInfo = event.get('event', {})
+        if eventInfo:
+            actor = eventInfo.get('actor', {})
+        elementType = actor.get('element_type_id', -10)
+        elementLookup = _MODELELEMENTTYPE.values_by_number.get(elementType)
+        self.name = actor.get('element_title', '')
+        self.type = getattr(elementLookup, 'name', '')
+
+
+class imitationSubElement(object):
+    def __init__(self, event):
+        actor = {}
+        eventInfo = event.get('event', {})
+        if eventInfo:
+            actor = eventInfo.get('actor', {})
+        elementType = actor.get('element_sub_type_id', -10)
+        elementLookup = _MODELELEMENTTYPE.values_by_number.get(elementType)
+        self.name = actor.get('element_sub_title', '')
+        self.type = getattr(elementLookup, 'name', '')
+
+
+class imitationEventDetails(object):
+    def __init__(self, event):
+        eventInfo = event.get('event', {})
+        eventDetails = eventInfo.get('details', [])
+        for field in eventDetails:
+            setattr(self, field['name'], field['value'][0])
+
+
+def buildImitationObjects(event):
+    dev = imitationDevice(event)
+    evt = imitationEvent(event)
+    elem = imitationElement(event)
+    sub_elem = imitationSubElement(event)
+    zp_det = imitationEventDetails(event)
+    return (dev, evt, elem, sub_elem, zp_det)
+
+
+def checkEvent(event, trigger):
+    dev, evt, elem, sub_elem, zp_det = buildImitationObjects(event)
+    testFunction = eval('lambda dev, evt, elem, sub_elem, zp_det: ' + trigger)
+    result = testFunction(dev, evt, elem, sub_elem, zp_det)
+    return result
 
 
 def buildEvent(event):
@@ -118,3 +175,4 @@ def buildEvent(event):
         eventDetails[key] = value
 
     return eventDetails
+
